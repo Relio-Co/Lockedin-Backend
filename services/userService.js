@@ -9,6 +9,56 @@ async function getAllUsers() {
   }
 }
 
+async function getUserById(userId) {
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function createUser(userData) {
+  try {
+    const newUser = await User.create(userData);
+    return newUser;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function updateUser(userId, userData) {
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    await user.update(userData);
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
+async function deleteUser(userId) {
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    await user.destroy();
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  deleteUser,
 };
