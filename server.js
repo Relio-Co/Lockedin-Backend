@@ -26,6 +26,7 @@ const authenticateToken = async (req, res, next) => {
     req.user = decodedToken;
     next();
   } catch (error) {
+    console.error('Error verifying token:', error);
     return res.sendStatus(403);
   }
 };
@@ -41,6 +42,7 @@ const validateAndCreateUser = async (req, res) => {
 
     res.status(200).json(user);
   } catch (error) {
+    console.error('Error validating/creating user:', error);
     res.status(500).json({ error: error.message });
   }
 };
