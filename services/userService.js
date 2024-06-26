@@ -1,8 +1,10 @@
-const { User } = require('../models');
+const { User, Group } = require('../models');
 
 async function getAllUsers() {
   try {
-    const users = await User.findAll();
+    const users = await User.findAll({
+      include: Group,
+    });
     return users;
   } catch (error) {
     throw error;
@@ -11,7 +13,10 @@ async function getAllUsers() {
 
 async function getUserById(userId) {
   try {
-    const user = await User.findOne({ where: { user_id: userId } });
+    const user = await User.findOne({
+      where: { user_id: userId },
+      include: Group,
+    });
     if (!user) {
       throw new Error('User not found');
     }
