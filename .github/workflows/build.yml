@@ -1,0 +1,39 @@
+name: Push Server Changes
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Cloudflared
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget
+        wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+        sudo dpkg -i cloudflared-linux-amd64.deb
+
+    - name: Set up SSH
+      run: |
+        mkdir -p $HOME/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > $HOME/.ssh/id_rsa
+        chmod 600 $HOME/.ssh/id_rsa
+        echo -e "Host lock1\n\tHostName ssh.golockedin.com\n\tProxyCommand cloudflared access ssh --hostname %h\n\tUser maanav\n\tIdentityFile $HOME/.ssh/id_rsa\n\tStrictHostKeyChecking no\n" > $HOME/.ssh/config
+
+    - name: Update repository on server
+      run: |
+        ssh -F $HOME/.ssh/config lock1 << 'EOF'
+        cd /home/maanav/Lockedin-Backend
+        git pull origin main
+        npm install
+        pm2 stop mainserver || true
+        pm2 delete mainserver || true
+        pm2 start server.js --name mainserver
+        EOF
