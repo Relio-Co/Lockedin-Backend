@@ -11,7 +11,7 @@ async function getAllUsers() {
 
 async function getUserById(userId) {
   try {
-    const user = await User.findByPk(userId);
+    const user = await User.findOne({ where: { user_id: userId } });
     if (!user) {
       throw new Error('User not found');
     }
@@ -32,7 +32,7 @@ async function createUser(userData) {
 
 async function updateUser(userId, userData) {
   try {
-    const user = await User.findByPk(userId);
+    const user = await User.findOne({ where: { user_id: userId } });
     if (!user) {
       throw new Error('User not found');
     }
@@ -45,7 +45,7 @@ async function updateUser(userId, userData) {
 
 async function deleteUser(userId) {
   try {
-    const user = await User.findByPk(userId);
+    const user = await User.findOne({ where: { user_id: userId } });
     if (!user) {
       throw new Error('User not found');
     }
