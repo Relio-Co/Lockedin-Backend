@@ -39,13 +39,6 @@ const User = sequelize.define('User', {
     unique: true,
   },
 }, {
-  indexes: [
-    {
-      name: 'idx_username',
-      unique: false,
-      fields: ['username']
-    }
-  ],
   tableName: 'users',
   timestamps: false,
 });
