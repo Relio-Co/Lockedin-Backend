@@ -17,15 +17,14 @@ app.use(express.json());
 const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-
+  
   if (token == null) return res.sendStatus(401);
-
+  
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     req.user = decodedToken;
     next();
   } catch (error) {
-    console.error('Token verification failed:', error);
     return res.sendStatus(403);
   }
 };
@@ -41,7 +40,6 @@ const validateAndCreateUser = async (req, res) => {
 
     res.status(200).json(user);
   } catch (error) {
-    console.error('Error finding or creating user:', error);
     res.status(500).json({ error: error.message });
   }
 };
