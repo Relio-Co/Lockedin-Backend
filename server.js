@@ -47,6 +47,7 @@ const validateAndCreateUser = async (req, res) => {
   }
 };
 
+
 app.post('/user/validate-token', authenticateToken, validateAndCreateUser);
 
 // server.js
