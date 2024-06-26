@@ -6,11 +6,11 @@ const db = require('./models');
 const userRoute = require('./routes/User');
 
 admin.initializeApp({
-  credential: admin.credential.cert(require('./service.json')),
+  credential: admin.credential.cert(require('./path/to/serviceAccountKey.json')),
 });
 
 const app = express();
-const PORT = process.env.PORT || 3007;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
@@ -29,9 +29,22 @@ const authenticateToken = async (req, res, next) => {
   }
 };
 
-app.post('/user/validate-token', authenticateToken, (req, res) => {
-  res.sendStatus(200);
-});
+const validateAndCreateUser = async (req, res) => {
+  try {
+    const { uid, email, name } = req.user;
+    let user = await db.User.findOne({ where: { email } });
+
+    if (!user) {
+      user = await db.User.create({ email, username: uid, name });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+app.post('/user/validate-token', authenticateToken, validateAndCreateUser);
 
 app.use('/user', userRoute);
 
