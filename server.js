@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const db = require('./models');
 const userRoute = require('./routes/User');
+const groupsRoute = require('./routes/Groups');
 
 admin.initializeApp({
   credential: admin.credential.cert(require('./service.json')),
@@ -49,6 +50,7 @@ const validateAndCreateUser = async (req, res) => {
 app.post('/user/validate-token', authenticateToken, validateAndCreateUser);
 
 app.use('/user', userRoute);
+app.use('/groups', authenticateToken, groupsRoute);
 
 db.sequelize.sync()
   .then(() => {

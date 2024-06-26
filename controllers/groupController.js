@@ -1,38 +1,44 @@
-// controllers/groupController.js
-const { Group, GroupMember } = require('../models');
+const { Group, GroupMember, User } = require('../models');
 
-async function getAllGroups(req, res, next) {
+async function getAllGroups(req, res) {
   try {
-    const groups = await Group.findAll();
+    const groups = await Group.findAll({
+      include: [
+        {
+          model: GroupMember,
+          include: [
+            {
+              model: User,
+              attributes: ['user_id', 'username', 'profile_picture'],
+            },
+          ],
+        },
+      ],
+    });
     res.json(groups);
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: error.message });
   }
 }
 
-async function joinGroup(req, res, next) {
+async function joinGroup(req, res) {
   try {
     const groupId = req.params.groupId;
     const userId = req.user.uid;
-    await GroupMember.create({ group_id: groupId, user_id: userId, role: 'member' });
-    res.sendStatus(200);
-  } catch (error) {
-    next(error);
-  }
-}
 
-async function getUserGroups(req, res, next) {
-  try {
-    const userId = req.user.uid;
-    const groups = await GroupMember.findAll({ where: { user_id: userId } });
-    res.json(groups);
+    const group = await Group.findByPk(groupId);
+    if (!group) {
+      return res.status(404).json({ error: 'Group not found' });
+    }
+
+    await GroupMember.create({ group_id: groupId, user_id: userId, role: 'member' });
+    res.status(200).json({ message: 'Joined group successfully' });
   } catch (error) {
-    next(error);
+    res.status(500).json({ error: error.message });
   }
 }
 
 module.exports = {
   getAllGroups,
   joinGroup,
-  getUserGroups,
 };
