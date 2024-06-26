@@ -16,7 +16,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Sign in user and get JWT
 const getJwtToken = async () => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, 'a@gmail.com', 'password');

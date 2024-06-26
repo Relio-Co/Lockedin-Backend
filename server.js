@@ -18,7 +18,6 @@ app.use(express.json());
 const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-  
   if (token == null) return res.sendStatus(401);
 
   try {
@@ -47,13 +46,10 @@ const validateAndCreateUser = async (req, res) => {
   }
 };
 
-
 app.post('/user/validate-token', authenticateToken, validateAndCreateUser);
 
-// server.js
 app.use('/user', authenticateToken, userRoute);
-app.use('/groups', groupsRoute);
-
+app.use('/groups', authenticateToken, groupsRoute);
 
 db.sequelize.sync()
   .then(() => {
