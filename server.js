@@ -20,7 +20,7 @@ const authenticateToken = async (req, res, next) => {
   const token = authHeader && authHeader.split(' ')[1];
   
   if (token == null) return res.sendStatus(401);
-  
+
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     req.user = decodedToken;
@@ -51,7 +51,7 @@ app.post('/user/validate-token', authenticateToken, validateAndCreateUser);
 
 // server.js
 app.use('/user', authenticateToken, userRoute);
-app.use('/groups', authenticateToken, groupsRoute);
+app.use('/groups', groupsRoute);
 
 
 db.sequelize.sync()
