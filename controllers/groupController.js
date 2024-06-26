@@ -21,6 +21,29 @@ async function getAllGroups(req, res) {
   }
 }
 
+async function getGroupsByUserId(req, res) {
+  try {
+    const userId = req.user.uid;
+    const groups = await Group.findAll({
+      include: [
+        {
+          model: GroupMember,
+          where: { user_id: userId },
+          include: [
+            {
+              model: User,
+              attributes: ['user_id', 'username', 'profile_picture'],
+            },
+          ],
+        },
+      ],
+    });
+    res.json(groups);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 async function joinGroup(req, res) {
   try {
     const groupId = req.params.groupId;
@@ -40,5 +63,6 @@ async function joinGroup(req, res) {
 
 module.exports = {
   getAllGroups,
+  getGroupsByUserId,
   joinGroup,
 };

@@ -49,8 +49,10 @@ const validateAndCreateUser = async (req, res) => {
 
 app.post('/user/validate-token', authenticateToken, validateAndCreateUser);
 
-app.use('/user', userRoute);
+// server.js
+app.use('/user', authenticateToken, userRoute);
 app.use('/groups', authenticateToken, groupsRoute);
+
 
 db.sequelize.sync()
   .then(() => {
