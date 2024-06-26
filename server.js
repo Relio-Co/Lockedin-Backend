@@ -1,14 +1,39 @@
+const express = require('express');
+const admin = require('firebase-admin');
 require('dotenv').config();
- express = require('express');
 
 const db = require('./models');
+const userRoute = require('./routes/User');
 
+admin.initializeApp({
+  credential: admin.credential.cert(require('./service.json')),
+});
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3007;
 
-const userRoute = require("./routes/User")
-app.use("/user", userRoute)
+app.use(express.json());
+
+const authenticateToken = async (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  if (token == null) return res.sendStatus(401);
+  
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    req.user = decodedToken;
+    next();
+  } catch (error) {
+    return res.sendStatus(403);
+  }
+};
+
+app.post('/user/validate-token', authenticateToken, (req, res) => {
+  res.sendStatus(200);
+});
+
+app.use('/user', userRoute);
 
 db.sequelize.sync()
   .then(() => {
