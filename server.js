@@ -6,7 +6,7 @@ const db = require('./models');
 const userRoute = require('./routes/User');
 
 admin.initializeApp({
-  credential: admin.credential.cert(require('./path/to/serviceAccountKey.json')),
+  credential: admin.credential.cert(require('./service.json')),
 });
 
 const app = express();
