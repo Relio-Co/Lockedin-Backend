@@ -61,13 +61,13 @@ async function deleteUser(req, res, next) {
   }
 }
 
-const validateAndCreateUser = async (req, res) => {
+async function validateAndCreateUser(req, res) {
   try {
     const { uid, email, username } = req.user; // Get from the decoded token
-    let user = await db.User.findOne({ where: { uuid: uid } });
+    let user = await userService.getUserByUid(uid);
 
     if (!user) {
-      user = await db.User.create({ email, username: email.split('@')[0], uuid: uid }); // Username can be set to email prefix
+      user = await userService.createUser({ email, username: email.split('@')[0], uid }); // Use email prefix as username
     }
 
     res.status(200).json(user);
@@ -75,7 +75,7 @@ const validateAndCreateUser = async (req, res) => {
     console.error('Error validating/creating user:', error);
     res.status(500).json({ error: error.message });
   }
-};
+}
 
 module.exports = {
   getAllUsers,
