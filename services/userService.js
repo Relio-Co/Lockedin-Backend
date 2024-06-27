@@ -3,7 +3,7 @@ const { User, Group } = require('../models');
 async function getAllUsers() {
   try {
     const users = await User.findAll({
-      include: Group,
+      include: [{ model: Group }]
     });
     return users;
   } catch (error) {
@@ -15,7 +15,7 @@ async function getUserById(userId) {
   try {
     const user = await User.findOne({
       where: { user_id: userId },
-      include: Group,
+      include: [{ model: Group }]
     });
     if (!user) {
       throw new Error('User not found');

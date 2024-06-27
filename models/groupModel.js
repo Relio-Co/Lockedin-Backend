@@ -18,14 +18,15 @@ const Group = sequelize.define('Group', {
     type: DataTypes.INTEGER,
     defaultValue: 0,
   },
+  user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'users', // name of the table
+      key: 'user_id', // key in the users table to reference
+    },
+  },
 }, {
-  indexes: [
-    {
-      name: 'idx_name',
-      unique: false,
-      fields: ['name']
-    }
-  ],
   tableName: 'groups',
   timestamps: false,
 });

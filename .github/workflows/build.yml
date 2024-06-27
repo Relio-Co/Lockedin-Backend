@@ -31,8 +31,9 @@ jobs:
       run: |
         ssh -F $HOME/.ssh/config lock1 << 'EOF'
         cd /home/maanav/Lockedin-Backend
-        git pull origin main
-        npm install
+        git fetch origin main
+        git reset --hard origin/main
+        npm install --force
         pm2 stop mainserver || true
         pm2 delete mainserver || true
         pm2 start server.js --name mainserver
