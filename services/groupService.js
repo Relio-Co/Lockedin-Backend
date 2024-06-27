@@ -1,7 +1,24 @@
 const { Group, GroupMember, User } = require('../models');
 
-const getAllGroups = async () => {
-  return Group.findAll();
+const getAllGroupsForUser = async (userId) => {
+  // Fetch all groups and user's subscribed groups
+  const allGroups = await Group.findAll({
+    include: [
+      {
+        model: GroupMember,
+        as: 'members',
+        attributes: ['user_id'],
+        where: { user_id: userId },
+        required: false,
+      },
+    ],
+  });
+
+  // Mark groups as subscribed or not
+  return allGroups.map(group => ({
+    ...group.toJSON(),
+    subscribed: group.members.length > 0,
+  }));
 };
 
 const joinGroup = async (groupId, userId) => {
@@ -15,22 +32,17 @@ const joinGroup = async (groupId, userId) => {
     throw new Error('User not found');
   }
 
-  // Check if the user is already a member of the group
   const existingMember = await GroupMember.findOne({ where: { group_id: groupId, user_id: userId } });
   if (existingMember) {
-    throw new Error('User is already a member of the group');
+    await GroupMember.destroy({ where: { group_id: groupId, user_id: userId } });
+    return { groupId, memberCount: await GroupMember.count({ where: { group_id: groupId } }), subscribed: false };
+  } else {
+    await GroupMember.create({ group_id: groupId, user_id: userId, role: 'member' });
+    return { groupId, memberCount: await GroupMember.count({ where: { group_id: groupId } }), subscribed: true };
   }
-
-  // Add user to the group
-  await GroupMember.create({ group_id: groupId, user_id: userId, role: 'member' });
-
-  // Get the updated number of members in the group
-  const memberCount = await GroupMember.count({ where: { group_id: groupId } });
-
-  return { groupId, memberCount };
 };
 
 module.exports = {
-  getAllGroups,
+  getAllGroupsForUser,
   joinGroup,
 };
