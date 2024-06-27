@@ -31,26 +31,6 @@ const authenticateToken = async (req, res, next) => {
   }
 };
 
-const validateAndCreateUser = async (req, res) => {
-  try {
-    const { uid, email, username } = req.body;
-    let user = await db.User.findOne({ where: { uuid: uid } });
-
-    if (!user) {
-      const usernameTaken = await db.User.findOne({ where: { username } });
-      if (usernameTaken) {
-        return res.status(400).json({ error: 'Username is already taken' });
-      }
-      user = await db.User.create({ email, username, uuid: uid });
-    }
-
-    res.status(200).json(user);
-  } catch (error) {
-    console.error('Error validating/creating user:', error);
-    res.status(500).json({ error: error.message });
-  }
-};
-
 app.post('/user/validate-token', authenticateToken, validateAndCreateUser);
 
 app.use('/user', authenticateToken, userRoute);

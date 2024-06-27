@@ -61,17 +61,13 @@ async function deleteUser(req, res, next) {
   }
 }
 
-async function validateAndCreateUser(req, res) {
+const validateAndCreateUser = async (req, res) => {
   try {
-    const { uid, email, username } = req.body;
-    let user = await userService.getUserByUid(uid);
+    const { uid, email, username } = req.user; // Get from the decoded token
+    let user = await db.User.findOne({ where: { uuid: uid } });
 
     if (!user) {
-      const usernameTaken = await userService.isUsernameTaken(username);
-      if (usernameTaken) {
-        return res.status(400).json({ error: 'Username is already taken' });
-      }
-      user = await userService.createUser({ email, uid, username });
+      user = await db.User.create({ email, username: email.split('@')[0], uuid: uid }); // Username can be set to email prefix
     }
 
     res.status(200).json(user);
@@ -79,7 +75,7 @@ async function validateAndCreateUser(req, res) {
     console.error('Error validating/creating user:', error);
     res.status(500).json({ error: error.message });
   }
-}
+};
 
 module.exports = {
   getAllUsers,
@@ -88,5 +84,5 @@ module.exports = {
   updateUser,
   updateUserSettings,
   deleteUser,
-  validateAndCreateUser,
+  validateAndCreateUser, // Ensure this is exported
 };
