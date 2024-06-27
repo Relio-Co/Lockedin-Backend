@@ -38,6 +38,11 @@ const User = sequelize.define('User', {
     allowNull: false,
     unique: true,
   },
+  uuid: {
+    type: DataTypes.STRING(128),
+    allowNull: false,
+    unique: true,
+  },
 }, {
   indexes: [
     {

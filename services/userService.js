@@ -31,6 +31,7 @@ async function createUser(userData) {
     const newUser = await User.create({
       ...userData,
       username: userData.uid, // Use the Firebase UID as the username
+      uuid: userData.uid, // Store the Firebase UID in the UUID field
     });
     return newUser;
   } catch (error) {
