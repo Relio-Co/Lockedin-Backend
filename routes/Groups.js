@@ -4,6 +4,7 @@ const groupController = require('../controllers/groupController');
 const router = express.Router();
 
 router.get('/', groupController.getAllGroups);
+router.get('/:groupId', groupController.getGroupById);
 router.post('/join/:groupId', groupController.joinGroup);
 
 module.exports = router;
