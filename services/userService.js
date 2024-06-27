@@ -28,7 +28,10 @@ async function getUserById(userId) {
 
 async function createUser(userData) {
   try {
-    const newUser = await User.create(userData);
+    const newUser = await User.create({
+      ...userData,
+      username: userData.uid, // Use the Firebase UID as the username
+    });
     return newUser;
   } catch (error) {
     throw error;

@@ -23,14 +23,14 @@ const sendFriendRequest = async (req, res) => {
 };
 
 const getFriendRequests = async (req, res) => {
-  try {
-    const userId = req.user.uid;
-    const requests = await friendService.getFriendRequests(userId);
-    res.json(requests);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+    try {
+      const username = req.user.uid; // This is now the Firebase UID, which we're using as the username
+      const requests = await friendService.getFriendRequests(username);
+      res.json(requests);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };
 
 const acceptFriendRequest = async (req, res) => {
   try {
@@ -55,9 +55,9 @@ const rejectFriendRequest = async (req, res) => {
 };
 
 module.exports = {
-  searchUsers,
-  sendFriendRequest,
-  getFriendRequests,
-  acceptFriendRequest,
-  rejectFriendRequest,
-};
+    searchUsers,
+    sendFriendRequest,
+    getFriendRequests,
+    acceptFriendRequest,
+    rejectFriendRequest,
+  };

@@ -34,7 +34,7 @@ const User = sequelize.define('User', {
     defaultValue: true,
   },
   username: {
-    type: DataTypes.STRING(255),
+    type: DataTypes.STRING(128), // Increase the length to accommodate Firebase UID
     allowNull: false,
     unique: true,
   },

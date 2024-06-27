@@ -28,12 +28,17 @@ const sendFriendRequest = async (senderId, receiverId) => {
   return request;
 };
 
-const getFriendRequests = async (userId) => {
-  return FriendRequest.findAll({
-    where: { receiver_id: userId, status: 'pending' },
-    include: [{ model: User, as: 'Sender', attributes: ['user_id', 'username', 'name', 'profile_picture'] }],
-  });
-};
+const getFriendRequests = async (username) => {
+    const user = await User.findOne({ where: { username } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+  
+    return FriendRequest.findAll({
+      where: { receiver_id: user.user_id, status: 'pending' },
+      include: [{ model: User, as: 'Sender', attributes: ['user_id', 'username', 'name', 'profile_picture'] }],
+    });
+  };
 
 const acceptFriendRequest = async (requestId, userId) => {
   const request = await FriendRequest.findOne({
@@ -61,9 +66,9 @@ const rejectFriendRequest = async (requestId, userId) => {
 };
 
 module.exports = {
-  searchUsers,
-  sendFriendRequest,
-  getFriendRequests,
-  acceptFriendRequest,
-  rejectFriendRequest,
-};
+    searchUsers,
+    sendFriendRequest,
+    getFriendRequests,
+    acceptFriendRequest,
+    rejectFriendRequest,
+  };
