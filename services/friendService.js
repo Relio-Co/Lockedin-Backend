@@ -20,7 +20,7 @@ const sendFriendRequest = async (senderId, receiverUuid) => {
   if (!receiver) {
     throw new Error('Receiver not found');
   }
-  
+
   const [request, created] = await FriendRequest.findOrCreate({
     where: { sender_id: senderId, receiver_id: receiver.user_id },
     defaults: { status: 'pending' },
