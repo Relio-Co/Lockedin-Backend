@@ -3,7 +3,7 @@ const friendService = require('../services/friendService');
 const searchUsers = async (req, res) => {
   try {
     const { query } = req.query;
-    const currentUserId = req.user.uid;
+    const currentUserId = req.user.uid; // This is already a string
     const users = await friendService.searchUsers(query, currentUserId);
     res.json(users);
   } catch (error) {
@@ -14,7 +14,7 @@ const searchUsers = async (req, res) => {
 const sendFriendRequest = async (req, res) => {
   try {
     const { receiverId } = req.body;
-    const senderId = req.user.uid;
+    const senderId = req.user.uid; // This is already a string
     const request = await friendService.sendFriendRequest(senderId, receiverId);
     res.status(201).json(request);
   } catch (error) {
@@ -23,19 +23,19 @@ const sendFriendRequest = async (req, res) => {
 };
 
 const getFriendRequests = async (req, res) => {
-    try {
-      const username = req.user.uid; // This is now the Firebase UID, which we're using as the username
-      const requests = await friendService.getFriendRequests(username);
-      res.json(requests);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  };
+  try {
+    const username = req.user.uid; // This is already a string
+    const requests = await friendService.getFriendRequests(username);
+    res.json(requests);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 const acceptFriendRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
-    const userId = req.user.uid;
+    const userId = req.user.uid; // This is already a string
     await friendService.acceptFriendRequest(requestId, userId);
     res.sendStatus(204);
   } catch (error) {
@@ -46,7 +46,7 @@ const acceptFriendRequest = async (req, res) => {
 const rejectFriendRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
-    const userId = req.user.uid;
+    const userId = req.user.uid; // This is already a string
     await friendService.rejectFriendRequest(requestId, userId);
     res.sendStatus(204);
   } catch (error) {
@@ -55,9 +55,9 @@ const rejectFriendRequest = async (req, res) => {
 };
 
 module.exports = {
-    searchUsers,
-    sendFriendRequest,
-    getFriendRequests,
-    acceptFriendRequest,
-    rejectFriendRequest,
-  };
+  searchUsers,
+  sendFriendRequest,
+  getFriendRequests,
+  acceptFriendRequest,
+  rejectFriendRequest,
+};

@@ -1,4 +1,4 @@
-const { User, FriendRequest } = require('../models');
+const { User, FriendRequest, Friend } = require('../models');
 const { Op } = require('sequelize');
 
 const searchUsers = async (query, currentUserId) => {
@@ -8,7 +8,7 @@ const searchUsers = async (query, currentUserId) => {
         { username: { [Op.iLike]: `%${query}%` } },
         { name: { [Op.iLike]: `%${query}%` } },
       ],
-      user_id: { [Op.ne]: currentUserId },
+      username: { [Op.ne]: currentUserId }, // Ensure currentUserId is treated as a string
     },
     attributes: ['user_id', 'username', 'name', 'profile_picture'],
     limit: 10,
@@ -29,16 +29,16 @@ const sendFriendRequest = async (senderId, receiverId) => {
 };
 
 const getFriendRequests = async (username) => {
-    const user = await User.findOne({ where: { username } });
-    if (!user) {
-      throw new Error('User not found');
-    }
-  
-    return FriendRequest.findAll({
-      where: { receiver_id: user.user_id, status: 'pending' },
-      include: [{ model: User, as: 'Sender', attributes: ['user_id', 'username', 'name', 'profile_picture'] }],
-    });
-  };
+  const user = await User.findOne({ where: { username } });
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  return FriendRequest.findAll({
+    where: { receiver_id: user.user_id, status: 'pending' },
+    include: [{ model: User, as: 'Sender', attributes: ['user_id', 'username', 'name', 'profile_picture'] }],
+  });
+};
 
 const acceptFriendRequest = async (requestId, userId) => {
   const request = await FriendRequest.findOne({
@@ -50,7 +50,10 @@ const acceptFriendRequest = async (requestId, userId) => {
   }
 
   await request.update({ status: 'accepted' });
-  // Add to friends table (if you have one) or handle friendship logic here
+
+  // Add to friends table
+  await Friend.create({ user_id: request.sender_id, friend_user_id: userId });
+  await Friend.create({ user_id: userId, friend_user_id: request.sender_id });
 };
 
 const rejectFriendRequest = async (requestId, userId) => {
@@ -66,9 +69,9 @@ const rejectFriendRequest = async (requestId, userId) => {
 };
 
 module.exports = {
-    searchUsers,
-    sendFriendRequest,
-    getFriendRequests,
-    acceptFriendRequest,
-    rejectFriendRequest,
-  };
+  searchUsers,
+  sendFriendRequest,
+  getFriendRequests,
+  acceptFriendRequest,
+  rejectFriendRequest,
+};
