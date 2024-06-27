@@ -6,7 +6,7 @@ const getAllGroupsForUser = async (userId) => {
     include: [
       {
         model: GroupMember,
-        as: 'members',
+        as: 'GroupMembers',
         attributes: ['user_id'],
         where: { user_id: userId },
         required: false,
@@ -17,7 +17,7 @@ const getAllGroupsForUser = async (userId) => {
   // Mark groups as subscribed or not
   return allGroups.map(group => ({
     ...group.toJSON(),
-    subscribed: group.members.length > 0,
+    subscribed: group.GroupMembers.length > 0,
   }));
 };
 

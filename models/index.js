@@ -7,7 +7,7 @@ const GroupMember = require('./groupMemberModel'); // New model for group member
 User.hasMany(Group, { foreignKey: 'user_id', sourceKey: 'user_id' });
 Group.belongsTo(User, { foreignKey: 'user_id', targetKey: 'user_id' });
 
-Group.hasMany(GroupMember, { foreignKey: 'group_id', sourceKey: 'group_id' });
+Group.hasMany(GroupMember, { foreignKey: 'group_id', sourceKey: 'group_id', as: 'GroupMembers' });
 GroupMember.belongsTo(Group, { foreignKey: 'group_id', targetKey: 'group_id' });
 
 User.hasMany(GroupMember, { foreignKey: 'user_id', sourceKey: 'user_id' });
