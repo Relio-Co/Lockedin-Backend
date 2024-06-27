@@ -33,14 +33,9 @@ const sendFriendRequest = async (senderId, receiverUuid) => {
   return request;
 };
 
-const getFriendRequests = async (username) => {
-  const user = await User.findOne({ where: { uuid: username } });
-  if (!user) {
-    throw new Error('User not found');
-  }
-
+const getFriendRequests = async (userId) => {
   return FriendRequest.findAll({
-    where: { receiver_id: user.user_id, status: 'pending' },
+    where: { receiver_id: userId, status: 'pending' },
     include: [{ model: User, as: 'Sender', attributes: ['user_id', 'username', 'name', 'profile_picture'] }],
   });
 };

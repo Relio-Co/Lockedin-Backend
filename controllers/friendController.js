@@ -12,21 +12,20 @@ const searchUsers = async (req, res) => {
 };
 
 const sendFriendRequest = async (req, res) => {
-    try {
-      const { receiverUuid } = req.body;
-      const senderId = req.user.uid; // This is already a string
-      const request = await friendService.sendFriendRequest(senderId, receiverUuid);
-      res.status(201).json(request);
-    } catch (error) {
-      res.status(400).json({ error: error.message });
-    }
-  };
-  
+  try {
+    const { receiverUuid } = req.body;
+    const senderId = req.user.user_id; // Get the integer user_id
+    const request = await friendService.sendFriendRequest(senderId, receiverUuid);
+    res.status(201).json(request);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 
 const getFriendRequests = async (req, res) => {
   try {
-    const username = req.user.uid; // This is already a string
-    const requests = await friendService.getFriendRequests(username);
+    const userId = req.user.user_id; // Get the integer user_id
+    const requests = await friendService.getFriendRequests(userId);
     res.json(requests);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -36,7 +35,7 @@ const getFriendRequests = async (req, res) => {
 const acceptFriendRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
-    const userId = req.user.uid; // This is already a string
+    const userId = req.user.user_id; // Get the integer user_id
     await friendService.acceptFriendRequest(requestId, userId);
     res.sendStatus(204);
   } catch (error) {
@@ -47,7 +46,7 @@ const acceptFriendRequest = async (req, res) => {
 const rejectFriendRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
-    const userId = req.user.uid; // This is already a string
+    const userId = req.user.user_id; // Get the integer user_id
     await friendService.rejectFriendRequest(requestId, userId);
     res.sendStatus(204);
   } catch (error) {
