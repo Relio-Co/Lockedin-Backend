@@ -21,7 +21,8 @@ async function getUserById(req, res, next) {
 
 async function createUser(req, res, next) {
   try {
-    const userData = req.body;
+    const { email, uid } = req.body;
+    const userData = { email, uid };
     const newUser = await userService.createUser(userData);
     res.status(201).json(newUser);
   } catch (error) {
@@ -61,6 +62,26 @@ async function deleteUser(req, res, next) {
   }
 }
 
+async function validateAndCreateUser(req, res) {
+  try {
+    const { uid, email, username } = req.body;
+    let user = await userService.getUserByUid(uid);
+
+    if (!user) {
+      const usernameTaken = await userService.isUsernameTaken(username);
+      if (usernameTaken) {
+        return res.status(400).json({ error: 'Username is already taken' });
+      }
+      user = await userService.createUser({ email, uid, username });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.error('Error validating/creating user:', error);
+    res.status(500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   getAllUsers,
   getUserById,
@@ -68,4 +89,5 @@ module.exports = {
   updateUser,
   updateUserSettings,
   deleteUser,
+  validateAndCreateUser,
 };

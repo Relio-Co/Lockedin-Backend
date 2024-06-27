@@ -12,15 +12,16 @@ const searchUsers = async (req, res) => {
 };
 
 const sendFriendRequest = async (req, res) => {
-  try {
-    const { receiverId } = req.body;
-    const senderId = req.user.uid; // This is already a string
-    const request = await friendService.sendFriendRequest(senderId, receiverId);
-    res.status(201).json(request);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
+    try {
+      const { receiverUuid } = req.body;
+      const senderId = req.user.uid; // This is already a string
+      const request = await friendService.sendFriendRequest(senderId, receiverUuid);
+      res.status(201).json(request);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  };
+  
 
 const getFriendRequests = async (req, res) => {
   try {

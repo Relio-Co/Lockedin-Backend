@@ -1,10 +1,8 @@
-const { User, Group } = require('../models');
+const { User } = require('../models');
 
 async function getAllUsers() {
   try {
-    const users = await User.findAll({
-      include: [{ model: Group }]
-    });
+    const users = await User.findAll();
     return users;
   } catch (error) {
     throw error;
@@ -15,7 +13,6 @@ async function getUserById(userId) {
   try {
     const user = await User.findOne({
       where: { user_id: userId },
-      include: [{ model: Group }]
     });
     if (!user) {
       throw new Error('User not found');
@@ -26,12 +23,23 @@ async function getUserById(userId) {
   }
 }
 
+async function getUserByUid(uid) {
+  try {
+    const user = await User.findOne({
+      where: { uuid: uid },
+    });
+    return user;
+  } catch (error) {
+    throw error;
+  }
+}
+
 async function createUser(userData) {
   try {
     const newUser = await User.create({
       ...userData,
-      username: userData.uid, // Use the Firebase UID as the username
-      uuid: userData.uid, // Store the Firebase UID in the UUID field
+      username: userData.username,
+      uuid: userData.uid,
     });
     return newUser;
   } catch (error) {
@@ -64,10 +72,21 @@ async function deleteUser(userId) {
   }
 }
 
+async function isUsernameTaken(username) {
+  try {
+    const user = await User.findOne({ where: { username } });
+    return !!user;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   getAllUsers,
   getUserById,
+  getUserByUid,
   createUser,
   updateUser,
   deleteUser,
+  isUsernameTaken,
 };

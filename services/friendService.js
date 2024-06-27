@@ -8,16 +8,21 @@ const searchUsers = async (query, currentUserId) => {
         { username: { [Op.iLike]: `%${query}%` } },
         { name: { [Op.iLike]: `%${query}%` } },
       ],
-      username: { [Op.ne]: currentUserId }, // Ensure currentUserId is treated as a string
+      uuid: { [Op.ne]: currentUserId }, // Ensure currentUserId is treated as a string
     },
-    attributes: ['user_id', 'username', 'name', 'profile_picture'],
+    attributes: ['user_id', 'username', 'name', 'profile_picture', 'uuid'],
     limit: 10,
   });
 };
 
-const sendFriendRequest = async (senderId, receiverId) => {
+const sendFriendRequest = async (senderId, receiverUuid) => {
+  const receiver = await User.findOne({ where: { uuid: receiverUuid } });
+  if (!receiver) {
+    throw new Error('Receiver not found');
+  }
+  
   const [request, created] = await FriendRequest.findOrCreate({
-    where: { sender_id: senderId, receiver_id: receiverId },
+    where: { sender_id: senderId, receiver_id: receiver.user_id },
     defaults: { status: 'pending' },
   });
 
@@ -29,7 +34,7 @@ const sendFriendRequest = async (senderId, receiverId) => {
 };
 
 const getFriendRequests = async (username) => {
-  const user = await User.findOne({ where: { username } });
+  const user = await User.findOne({ where: { uuid: username } });
   if (!user) {
     throw new Error('User not found');
   }

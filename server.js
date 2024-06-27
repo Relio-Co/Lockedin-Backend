@@ -33,11 +33,15 @@ const authenticateToken = async (req, res, next) => {
 
 const validateAndCreateUser = async (req, res) => {
   try {
-    const { uid, email, name } = req.user;
-    let user = await db.User.findOne({ where: { email } });
+    const { uid, email, username } = req.body;
+    let user = await db.User.findOne({ where: { uuid: uid } });
 
     if (!user) {
-      user = await db.User.create({ email, username: uid, name });
+      const usernameTaken = await db.User.findOne({ where: { username } });
+      if (usernameTaken) {
+        return res.status(400).json({ error: 'Username is already taken' });
+      }
+      user = await db.User.create({ email, username, uuid: uid });
     }
 
     res.status(200).json(user);
