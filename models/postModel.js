@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
+const Group = require('./groupModel');  // Add this line
 
 const Post = sequelize.define('Post', {
   post_id: {
@@ -9,6 +10,10 @@ const Post = sequelize.define('Post', {
   },
   group_id: {
     type: DataTypes.INTEGER,
+    references: {
+      model: 'groups',
+      key: 'group_id',
+    },
   },
   caption: {
     type: DataTypes.TEXT,
@@ -18,7 +23,7 @@ const Post = sequelize.define('Post', {
     defaultValue: DataTypes.NOW,
   },
   created_by: {
-    type: DataTypes.STRING, // Update to STRING
+    type: DataTypes.STRING,
   },
   created_by_username: {
     type: DataTypes.STRING(255),
@@ -34,5 +39,8 @@ const Post = sequelize.define('Post', {
   tableName: 'group_posts',
   timestamps: false,
 });
+
+// Add association
+Post.belongsTo(Group, { foreignKey: 'group_id' });
 
 module.exports = Post;

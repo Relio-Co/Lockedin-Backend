@@ -31,7 +31,6 @@ const getGroupById = async (req, res) => {
         {
           model: db.Post,
           as: 'Posts',
-          where: { group_id: groupId },
           required: false,
         },
         {
@@ -58,6 +57,7 @@ const getGroupById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 const joinGroup = async (req, res) => {
   try {

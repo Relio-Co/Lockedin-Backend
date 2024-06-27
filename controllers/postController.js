@@ -5,22 +5,28 @@ const createPost = async (req, res) => {
       const { groupId, caption, isPublic } = req.body;
       const createdBy = req.user.uid;
       const createdByUsername = req.user.email.split('@')[0];
-      const imageUrl = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null; // Update to use req.file
-  
+      const imageUrl = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null;
+
+      // Check if the group exists
+      const group = await Group.findByPk(groupId);
+      if (!group) {
+        return res.status(400).json({ error: 'Group not found' });
+      }
+
       const newPost = await Post.create({
         group_id: groupId,
         caption,
         created_by: createdBy,
         created_by_username: createdByUsername,
         image_url: imageUrl,
-        is_public: isPublic
+        is_public: isPublic,
       });
-  
+
       res.status(201).json(newPost);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  };
+};
   
 
 const getAllPosts = async (req, res) => {

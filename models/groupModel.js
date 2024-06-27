@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
+const Post = require('./postModel');  // Add this line
 
 const Group = sequelize.define('Group', {
   group_id: {
@@ -30,5 +31,8 @@ const Group = sequelize.define('Group', {
   tableName: 'groups',
   timestamps: false,
 });
+
+// Add association
+Group.hasMany(Post, { foreignKey: 'group_id', as: 'Posts' });
 
 module.exports = Group;
