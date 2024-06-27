@@ -6,7 +6,7 @@ const db = require('./models');
 const userRoute = require('./routes/User');
 const groupsRoute = require('./routes/Groups');
 const friendsRoute = require('./routes/Friends');
-const { validateAndCreateUser } = require('./controllers/userController'); // Ensure this import is correct
+const { validateAndCreateUser } = require('./controllers/userController');
 
 admin.initializeApp({
   credential: admin.credential.cert(require('./service.json')),

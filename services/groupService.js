@@ -1,7 +1,6 @@
 const { Group, GroupMember, User } = require('../models');
 
 const getAllGroupsForUser = async (userId) => {
-  // Fetch all groups and user's subscribed groups
   const allGroups = await Group.findAll({
     include: [
       {
@@ -14,7 +13,6 @@ const getAllGroupsForUser = async (userId) => {
     ],
   });
 
-  // Mark groups as subscribed or not
   return allGroups.map(group => ({
     ...group.toJSON(),
     subscribed: group.GroupMembers.length > 0,
