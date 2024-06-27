@@ -40,6 +40,17 @@ async function updateUser(req, res, next) {
   }
 }
 
+async function updateUserSettings(req, res, next) {
+  try {
+    const userId = req.user.uid; // Assuming user ID is available in req.user.uid
+    const userSettings = req.body;
+    const updatedUser = await userService.updateUser(userId, userSettings);
+    res.json(updatedUser);
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function deleteUser(req, res, next) {
   try {
     const userId = req.params.id;
@@ -55,5 +66,6 @@ module.exports = {
   getUserById,
   createUser,
   updateUser,
+  updateUserSettings,
   deleteUser,
 };
