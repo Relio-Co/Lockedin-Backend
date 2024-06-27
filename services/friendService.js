@@ -15,14 +15,16 @@ const searchUsers = async (query, currentUserId) => {
   });
 };
 
-const sendFriendRequest = async (senderId, receiverUuid) => {
+const sendFriendRequest = async (senderUuid, receiverUuid) => {
+  const sender = await User.findOne({ where: { uuid: senderUuid } });
   const receiver = await User.findOne({ where: { uuid: receiverUuid } });
-  if (!receiver) {
-    throw new Error('Receiver not found');
+
+  if (!receiver || !sender) {
+    throw new Error('User not found');
   }
 
   const [request, created] = await FriendRequest.findOrCreate({
-    where: { sender_id: senderId, receiver_id: receiver.user_id },
+    where: { sender_id: sender.user_id, receiver_id: receiver.user_id },
     defaults: { status: 'pending' },
   });
 
@@ -33,16 +35,28 @@ const sendFriendRequest = async (senderId, receiverUuid) => {
   return request;
 };
 
-const getFriendRequests = async (userId) => {
+const getFriendRequests = async (uuid) => {
+  const user = await User.findOne({ where: { uuid } });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
   return FriendRequest.findAll({
-    where: { receiver_id: userId, status: 'pending' },
+    where: { receiver_id: user.user_id, status: 'pending' },
     include: [{ model: User, as: 'Sender', attributes: ['user_id', 'username', 'name', 'profile_picture'] }],
   });
 };
 
-const acceptFriendRequest = async (requestId, userId) => {
+const acceptFriendRequest = async (requestId, uuid) => {
+  const user = await User.findOne({ where: { uuid } });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
   const request = await FriendRequest.findOne({
-    where: { request_id: requestId, receiver_id: userId, status: 'pending' },
+    where: { request_id: requestId, receiver_id: user.user_id, status: 'pending' },
   });
 
   if (!request) {
@@ -52,13 +66,19 @@ const acceptFriendRequest = async (requestId, userId) => {
   await request.update({ status: 'accepted' });
 
   // Add to friends table
-  await Friend.create({ user_id: request.sender_id, friend_user_id: userId });
-  await Friend.create({ user_id: userId, friend_user_id: request.sender_id });
+  await Friend.create({ user_id: request.sender_id, friend_user_id: user.user_id });
+  await Friend.create({ user_id: user.user_id, friend_user_id: request.sender_id });
 };
 
-const rejectFriendRequest = async (requestId, userId) => {
+const rejectFriendRequest = async (requestId, uuid) => {
+  const user = await User.findOne({ where: { uuid } });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
   const request = await FriendRequest.findOne({
-    where: { request_id: requestId, receiver_id: userId, status: 'pending' },
+    where: { request_id: requestId, receiver_id: user.user_id, status: 'pending' },
   });
 
   if (!request) {
