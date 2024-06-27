@@ -3,8 +3,8 @@ const User = require('./userModel');
 const Group = require('./groupModel');
 const GroupMember = require('./groupMemberModel');
 const FriendRequest = require('./friendRequestModel');
-const Friend = require('./friendModel'); // Import the Friend model
-const Post = require('./postModel'); // Import the Post model
+const Friend = require('./friendModel');
+const Post = require('./postModel');
 
 // Define associations
 User.hasMany(Group, { foreignKey: 'user_id', sourceKey: 'user_id' });
@@ -33,9 +33,8 @@ const db = {
   Group,
   GroupMember,
   FriendRequest,
-  Friend, // Add Friend model to the db object
+  Friend,
+  Post,
 };
-
-db.Post = Post;
 
 module.exports = db;

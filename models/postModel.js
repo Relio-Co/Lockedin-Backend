@@ -18,7 +18,7 @@ const Post = sequelize.define('Post', {
     defaultValue: DataTypes.NOW,
   },
   created_by: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING, // Update to STRING
   },
   created_by_username: {
     type: DataTypes.STRING(255),

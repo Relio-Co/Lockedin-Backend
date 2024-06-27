@@ -34,7 +34,7 @@ const User = sequelize.define('User', {
     defaultValue: true,
   },
   username: {
-    type: DataTypes.STRING(128), // Ensure the length accommodates Firebase UID
+    type: DataTypes.STRING(128),
     allowNull: false,
     unique: true,
   },
@@ -48,8 +48,8 @@ const User = sequelize.define('User', {
     {
       name: 'idx_username',
       unique: false,
-      fields: ['username']
-    }
+      fields: ['username'],
+    },
   ],
   tableName: 'users',
   timestamps: false,
