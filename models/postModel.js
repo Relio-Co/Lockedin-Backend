@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const Group = require('./groupModel');  // Add this line
 
 const Post = sequelize.define('Post', {
   post_id: {
@@ -39,8 +38,5 @@ const Post = sequelize.define('Post', {
   tableName: 'group_posts',
   timestamps: false,
 });
-
-// Add association
-Post.belongsTo(Group, { foreignKey: 'group_id' });
 
 module.exports = Post;
