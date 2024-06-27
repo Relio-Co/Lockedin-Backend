@@ -6,6 +6,7 @@ const db = require('./models');
 const userRoute = require('./routes/User');
 const groupsRoute = require('./routes/Groups');
 const friendsRoute = require('./routes/Friends');
+const postsRoute = require('./routes/Posts');
 const { validateAndCreateUser } = require('./controllers/userController');
 
 admin.initializeApp({
@@ -37,6 +38,7 @@ app.post('/user/validate-token', authenticateToken, validateAndCreateUser);
 app.use('/user', authenticateToken, userRoute);
 app.use('/groups', authenticateToken, groupsRoute);
 app.use('/friends', authenticateToken, friendsRoute);
+app.use('/posts', authenticateToken, postsRoute);
 
 db.sequelize.sync()
   .then(() => {

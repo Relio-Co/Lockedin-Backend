@@ -4,6 +4,7 @@ const Group = require('./groupModel');
 const GroupMember = require('./groupMemberModel');
 const FriendRequest = require('./friendRequestModel');
 const Friend = require('./friendModel'); // Import the Friend model
+const Post = require('./postModel'); // Import the Post model
 
 // Define associations
 User.hasMany(Group, { foreignKey: 'user_id', sourceKey: 'user_id' });
@@ -20,6 +21,9 @@ User.hasMany(FriendRequest, { foreignKey: 'receiver_id', as: 'ReceivedRequests' 
 FriendRequest.belongsTo(User, { foreignKey: 'sender_id', as: 'Sender' });
 FriendRequest.belongsTo(User, { foreignKey: 'receiver_id', as: 'Receiver' });
 
+User.hasMany(Post, { foreignKey: 'created_by', sourceKey: 'uuid' });
+Post.belongsTo(User, { foreignKey: 'created_by', targetKey: 'uuid' });
+
 // Add the Friend model association
 User.belongsToMany(User, { through: Friend, as: 'Friends', foreignKey: 'user_id', otherKey: 'friend_user_id' });
 
@@ -31,5 +35,7 @@ const db = {
   FriendRequest,
   Friend, // Add Friend model to the db object
 };
+
+db.Post = Post;
 
 module.exports = db;
