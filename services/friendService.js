@@ -1,4 +1,4 @@
-const { User, FriendRequest, Friend } = require('../models');
+const { User, Friend, FriendRequest } = require('../models');
 const { Op } = require('sequelize');
 
 const searchUsers = async (query, currentUserId) => {
@@ -8,7 +8,7 @@ const searchUsers = async (query, currentUserId) => {
         { username: { [Op.iLike]: `%${query}%` } },
         { name: { [Op.iLike]: `%${query}%` } },
       ],
-      uuid: { [Op.ne]: currentUserId }, // Ensure currentUserId is treated as a string
+      uuid: { [Op.ne]: currentUserId },
     },
     attributes: ['user_id', 'username', 'name', 'profile_picture', 'uuid'],
     limit: 10,
@@ -65,7 +65,6 @@ const acceptFriendRequest = async (requestId, uuid) => {
 
   await request.update({ status: 'accepted' });
 
-  // Add to friends table
   await Friend.create({ user_id: request.sender_id, friend_user_id: user.user_id });
   await Friend.create({ user_id: user.user_id, friend_user_id: request.sender_id });
 };
@@ -88,10 +87,40 @@ const rejectFriendRequest = async (requestId, uuid) => {
   await request.update({ status: 'rejected' });
 };
 
+const getFriends = async (uuid) => {
+  const user = await User.findOne({ where: { uuid } });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const friends = await Friend.findAll({
+    where: { user_id: user.user_id },
+    include: [
+      { model: User, as: 'UserFriend', attributes: ['user_id', 'username', 'name', 'profile_picture', 'uuid'] },
+    ],
+  });
+
+  return friends.map(friend => friend.UserFriend);
+};
+
+const removeFriend = async (userUuid, friendId) => {
+  const user = await User.findOne({ where: { uuid: userUuid } });
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  await Friend.destroy({ where: { user_id: user.user_id, friend_user_id: friendId } });
+  await Friend.destroy({ where: { user_id: friendId, friend_user_id: user.user_id } });
+};
+
 module.exports = {
   searchUsers,
   sendFriendRequest,
   getFriendRequests,
   acceptFriendRequest,
   rejectFriendRequest,
+  getFriends,
+  removeFriend,
 };

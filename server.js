@@ -7,7 +7,7 @@ require('dotenv').config();
 const db = require('./models');
 const userRoute = require('./routes/User');
 const groupsRoute = require('./routes/Groups');
-const friendsRoute = require('./routes/Friends');
+const friendsRoute = require('./routes/Friends'); // Ensure this line is present
 const postsRoute = require('./routes/Posts');
 const { validateAndCreateUser } = require('./controllers/userController');
 
@@ -60,7 +60,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/user', authenticateToken, userRoute);
 app.use('/groups', authenticateToken, groupsRoute);
-app.use('/friends', authenticateToken, friendsRoute);
+app.use('/friends', authenticateToken, friendsRoute); // Ensure this line is present
 app.use('/posts', authenticateToken, postsRoute);
 
 app.put('/user/settings', async (req, res) => {

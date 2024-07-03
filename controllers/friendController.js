@@ -54,10 +54,33 @@ const rejectFriendRequest = async (req, res) => {
   }
 };
 
+const getFriends = async (req, res) => {
+  try {
+    const userUuid = req.user.uid;
+    const friends = await friendService.getFriends(userUuid);
+    res.json(friends);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const removeFriend = async (req, res) => {
+  try {
+    const userUuid = req.user.uid;
+    const { friendId } = req.params;
+    await friendService.removeFriend(userUuid, friendId);
+    res.sendStatus(204);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   searchUsers,
   sendFriendRequest,
   getFriendRequests,
   acceptFriendRequest,
   rejectFriendRequest,
+  getFriends,
+  removeFriend,
 };
