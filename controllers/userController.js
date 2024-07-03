@@ -15,9 +15,11 @@ async function getUserById(req, res, next) {
     const user = await userService.getUserById(userId);
     res.json(user);
   } catch (error) {
-    next(error);
+    console.error('Error fetching user:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
+
 
 async function createUser(req, res, next) {
   try {
@@ -57,7 +59,8 @@ async function deleteUser(req, res, next) {
     await userService.deleteUser(userId);
     res.sendStatus(204);
   } catch (error) {
-    next(error);
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 

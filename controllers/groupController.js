@@ -19,6 +19,12 @@ const getAllGroups = async (req, res) => {
 const getGroupById = async (req, res) => {
   try {
     const { groupId } = req.params;
+    const parsedGroupId = parseInt(groupId, 10);
+
+    if (isNaN(parsedGroupId)) {
+      return res.status(400).json({ error: 'Invalid group ID' });
+    }
+
     const userId = req.user.uid; // Assuming user ID is available in req.user.uid
     const user = await db.User.findOne({ where: { uuid: userId } });
 
@@ -26,7 +32,7 @@ const getGroupById = async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const group = await db.Group.findByPk(groupId, {
+    const group = await db.Group.findByPk(parsedGroupId, {
       include: [
         {
           model: db.Post,
@@ -57,7 +63,6 @@ const getGroupById = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
 
 const joinGroup = async (req, res) => {
   try {

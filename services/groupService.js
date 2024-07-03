@@ -39,6 +39,7 @@ const joinGroup = async (groupId, userId) => {
     return { groupId, memberCount: await GroupMember.count({ where: { group_id: groupId } }), subscribed: true };
   }
 };
+
 const getSubscribedGroups = async (userId) => {
   const subscribedGroups = await Group.findAll({
     include: [

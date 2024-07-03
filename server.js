@@ -105,7 +105,6 @@ app.put('/user/settings', async (req, res) => {
   }
 });
 
-
 db.sequelize.sync()
   .then(() => {
     app.listen(PORT, () => {

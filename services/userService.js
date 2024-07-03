@@ -23,16 +23,21 @@ async function getUserById(userId) {
   }
 }
 
-async function getUserByUid(uid) {
+async function getUserById(userId) {
   try {
     const user = await User.findOne({
-      where: { uuid: uid },
+      where: { user_id: userId },
+      attributes: ['user_id', 'email', 'email_notifications', 'name', 'private_account', 'profile_picture', 'push_notifications', 'username', 'uuid'],
     });
+    if (!user) {
+      throw new Error('User not found');
+    }
     return user;
   } catch (error) {
     throw error;
   }
 }
+
 
 async function createUser(userData) {
   try {
