@@ -77,6 +77,16 @@ async function deleteUser(userId) {
   }
 }
 
+async function getUserByUid(uid) {
+  try {
+    const user = await User.findOne({ uid: uid });
+    return user;
+  } catch (error) {
+    console.error("Error fetching user by UID:", error);
+    throw error;
+  }
+}
+
 async function isUsernameTaken(username) {
   try {
     const user = await User.findOne({ where: { username } });

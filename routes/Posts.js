@@ -1,7 +1,7 @@
 const express = require('express');
 const postController = require('../controllers/postController');
 const multer = require('multer');
-const path = require('path');  // Add this line
+const path = require('path');
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
     cb(null, 'uploads/');
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Append the original file extension
+    cb(null, Date.now() + path.extname(file.originalname));
   }
 });
 
