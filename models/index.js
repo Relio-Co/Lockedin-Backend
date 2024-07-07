@@ -28,6 +28,7 @@ Group.hasMany(Post, { foreignKey: 'group_id', as: 'Posts' });
 Post.belongsTo(Group, { foreignKey: 'group_id' });
 
 User.belongsToMany(User, { through: Friend, as: 'Friends', foreignKey: 'user_id', otherKey: 'friend_user_id' });
+Friend.belongsTo(User, { as: 'UserFriend', foreignKey: 'friend_user_id' });
 
 const db = {
   sequelize,
