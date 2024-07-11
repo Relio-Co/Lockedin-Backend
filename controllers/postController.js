@@ -1,4 +1,4 @@
-const { Post, Group } = require('../models'); // Ensure Group is imported
+const { Post, User, Comment, Like } = require('../models');
 
 const createPost = async (req, res) => {
   try {
@@ -39,7 +39,87 @@ const getAllPosts = async (req, res) => {
   }
 };
 
+const getPostById = async (req, res) => {
+  try {
+    const post = await Post.findByPk(req.params.postId, {
+      include: [
+        { model: User, attributes: ['username', 'profile_picture'] },
+        { model: Comment, include: [{ model: User, attributes: ['username'] }] },
+      ],
+    });
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found' });
+    }
+    res.json(post);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getComments = async (req, res) => {
+  try {
+    const comments = await Comment.findAll({
+      where: { post_id: req.params.postId },
+      include: [{ model: User, attributes: ['username'] }],
+      order: [['created_at', 'DESC']],
+    });
+    res.json(comments);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const addComment = async (req, res) => {
+  try {
+    const { content } = req.body;
+    const comment = await Comment.create({
+      post_id: req.params.postId,
+      user_id: req.user.uid,
+      content,
+    });
+    const commentWithUser = await Comment.findByPk(comment.id, {
+      include: [{ model: User, attributes: ['username'] }],
+    });
+    res.status(201).json(commentWithUser);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const likePost = async (req, res) => {
+  try {
+    const [like, created] = await Like.findOrCreate({
+      where: { post_id: req.params.postId, user_id: req.user.uid },
+    });
+    
+    if (!created) {
+      await like.destroy();
+    }
+    
+    const likeCount = await Like.count({ where: { post_id: req.params.postId } });
+    res.json({ likes: likeCount, isLiked: created });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const checkLikeStatus = async (req, res) => {
+  try {
+    const like = await Like.findOne({
+      where: { post_id: req.params.postId, user_id: req.user.uid },
+    });
+    res.json({ isLiked: !!like });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   createPost,
   getAllPosts,
+  getPostById,
+  getComments,
+  addComment,
+  likePost,
+  checkLikeStatus,
 };
