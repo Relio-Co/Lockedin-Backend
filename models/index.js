@@ -5,6 +5,8 @@ const GroupMember = require('./groupMemberModel');
 const FriendRequest = require('./friendRequestModel');
 const Friend = require('./friendModel');
 const Post = require('./postModel');
+const Like = require('./likeModel');
+const Comment = require('./commentModel');
 
 // Define associations
 User.hasMany(Group, { foreignKey: 'user_id', sourceKey: 'user_id' });
@@ -30,6 +32,18 @@ Post.belongsTo(Group, { foreignKey: 'group_id' });
 User.belongsToMany(User, { through: Friend, as: 'Friends', foreignKey: 'user_id', otherKey: 'friend_user_id' });
 Friend.belongsTo(User, { as: 'UserFriend', foreignKey: 'friend_user_id' });
 
+User.hasMany(Like, { foreignKey: 'user_id' });
+Like.belongsTo(User, { foreignKey: 'user_id' });
+
+Post.hasMany(Like, { foreignKey: 'post_id' });
+Like.belongsTo(Post, { foreignKey: 'post_id' });
+
+User.hasMany(Comment, { foreignKey: 'user_id' });
+Comment.belongsTo(User, { foreignKey: 'user_id' });
+
+Post.hasMany(Comment, { foreignKey: 'post_id' });
+Comment.belongsTo(Post, { foreignKey: 'post_id' });
+
 const db = {
   sequelize,
   User,
@@ -38,6 +52,8 @@ const db = {
   FriendRequest,
   Friend,
   Post,
+  Like,
+  Comment,
 };
 
 module.exports = db;
